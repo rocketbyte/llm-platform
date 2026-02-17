@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ollama-pull-qwen3-4b
+  namespace: llm
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: pull
+          image: curlimages/curl:8.5.0
+          command: ["/bin/sh","-lc"]
+          args:
+            - |
+              echo "Waiting for Ollama...";
+              until curl -sf http://ollama:11434/api/tags >/dev/null; do sleep 2; done
+              echo "Pulling qwen3:8b...";
+              curl -s http://ollama:11434/api/pull -d '{"name":"qwen3:4b"}'
+              echo "Done."

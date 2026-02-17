@@ -1,0 +1,13 @@
+nodeSelector:
+  kubernetes.io/arch: arm64
+
+tolerations: []
+affinity: {}
+
+resources:
+  requests:
+    cpu: "500m"
+    memory: "2Gi"
+  limits:
+    cpu: "3"
+    memory: "4Gi"

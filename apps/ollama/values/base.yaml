@@ -1,0 +1,23 @@
+# Base defaults (k8s-agnostic)
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 11434
+
+persistentVolume:
+  enabled: true
+  size: 25Gi            # qwen3:8b is ~5.2GB; leave room for more models
+  accessModes: ["ReadWriteOnce"]
+
+resources:
+  requests:
+    cpu: "500m"
+    memory: "2Gi"
+  limits:
+    cpu: "4"
+    memory: "8Gi"
+
+# Keep ingress managed by us separately (clean separation)
+ingress:
+  enabled: false
