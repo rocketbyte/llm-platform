@@ -7,8 +7,6 @@ RELEASE="ollama"
 helm repo add ollama-helm https://helm.otwld.com >/dev/null 2>&1 || true
 helm repo update >/dev/null
 
-echo "$(pwd)"
-
 kubectl apply -f ollama/manifests/namespace.yaml
 
 helm upgrade --install "${RELEASE}" ollama-helm/ollama \
