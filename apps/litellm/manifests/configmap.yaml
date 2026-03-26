@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: litellm-config
+  namespace: llm
+data:
+  config.yaml: |
+    model_list:
+      - model_name: qwen3:4b
+        litellm_params:
+          model: ollama/qwen3:4b
+          api_base: http://ollama.llm.svc.cluster.local:11434
+
+      - model_name: qwen3:8b
+        litellm_params:
+          model: ollama/qwen3:8b
+          api_base: http://ollama.llm.svc.cluster.local:11434
+
+    router_settings:
+      routing_strategy: simple-shuffle
+
+    general_settings:
+      master_key: os.environ/LITELLM_MASTER_KEY
