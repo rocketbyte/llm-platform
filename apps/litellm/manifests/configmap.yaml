@@ -6,6 +6,15 @@ metadata:
 data:
   config.yaml: |
     model_list:
+      # ── Cloudflare Workers AI ─────────────────────────────────────────────
+      # Credentials injected via litellm-secrets (CLOUDFLARE_API_TOKEN, CLOUDFLARE_API_BASE)
+      - model_name: cf/llama-3.1-8b-instruct
+        litellm_params:
+          model: openai/@cf/meta/llama-3.1-8b-instruct
+          api_key: os.environ/CLOUDFLARE_API_TOKEN
+          api_base: os.environ/CLOUDFLARE_API_BASE
+
+      # ── Ollama ────────────────────────────────────────────────────────────
       - model_name: qwen3:4b
         litellm_params:
           model: ollama/qwen3:4b
@@ -21,3 +30,4 @@ data:
 
     general_settings:
       master_key: os.environ/LITELLM_MASTER_KEY
+      database_url: os.environ/LITELLM_DATABASE_URL

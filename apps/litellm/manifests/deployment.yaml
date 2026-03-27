@@ -7,6 +7,8 @@ metadata:
     app: litellm
 spec:
   replicas: 1
+  strategy:
+    type: Recreate  # kill old pod before starting new — avoids OOM on Raspberry Pi
   selector:
     matchLabels:
       app: litellm
@@ -40,15 +42,15 @@ spec:
           resources:
             requests:
               cpu: 100m
-              memory: 512Mi
+              memory: 256Mi
             limits:
               cpu: 500m
-              memory: 2560Mi
+              memory: 1536Mi
           livenessProbe:
             httpGet:
               path: /health/liveliness
               port: 4000
-            initialDelaySeconds: 60
+            initialDelaySeconds: 300  # prisma migrate deploy 109 migrations to remote Supabase
             periodSeconds: 20
             timeoutSeconds: 5
             failureThreshold: 3
@@ -56,7 +58,7 @@ spec:
             httpGet:
               path: /health/readiness
               port: 4000
-            initialDelaySeconds: 45
+            initialDelaySeconds: 360  # extra time for DB migrations on startup
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 5
