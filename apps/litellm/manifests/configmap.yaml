@@ -6,24 +6,26 @@ metadata:
 data:
   config.yaml: |
     model_list:
+      # ── Groq (gpt-oss-120b) — pipeline primary ────────────────────────────
+      # Fast inference of OpenAI's open-weight 120b. Credentials injected via
+      # litellm-secrets (GROQ_API_KEY).
+      - model_name: groq/gpt-oss-120b
+        litellm_params:
+          model: groq/openai/gpt-oss-120b
+          api_key: os.environ/GROQ_API_KEY
+
       # ── Cloudflare Workers AI ─────────────────────────────────────────────
       # Credentials injected via litellm-secrets (CLOUDFLARE_API_TOKEN, CLOUDFLARE_API_BASE)
-      - model_name: cf/llama-3.1-8b-instruct
+      - model_name: cf/llama-3.1-8b-instruct-fp8
         litellm_params:
-          model: openai/@cf/meta/llama-3.1-8b-instruct
+          model: openai/@cf/meta/llama-3.1-8b-instruct-fp8
           api_key: os.environ/CLOUDFLARE_API_TOKEN
           api_base: os.environ/CLOUDFLARE_API_BASE
 
-      # ── Ollama ────────────────────────────────────────────────────────────
-      - model_name: qwen3:4b
-        litellm_params:
-          model: ollama/qwen3:4b
-          api_base: http://ollama.llm.svc.cluster.local:11434
-
-      - model_name: qwen3:8b
-        litellm_params:
-          model: ollama/qwen3:8b
-          api_base: http://ollama.llm.svc.cluster.local:11434
+      # ── Ollama (disabled) ─────────────────────────────────────────────────
+      # Self-hosted Ollama was torn down to free cluster memory (qwen3 needs
+      # 4-5.5 GiB resident on the node). Re-add the qwen3 entries here and
+      # redeploy apps/ollama if it's brought back.
 
       # ── Google Gemini ─────────────────────────────────────────────────────
       # Credentials injected via litellm-secrets (GEMINI_API_KEY)
@@ -34,6 +36,12 @@ data:
 
     router_settings:
       routing_strategy: simple-shuffle
+      # Primary is Groq gpt-oss-120b; if it errors or is rate-limited, retry on
+      # Gemini. (Ollama was removed from the fallback chain when the self-hosted
+      # model was torn down to free cluster memory.)
+      fallbacks:
+        - groq/gpt-oss-120b: ["gemini-2.5-flash-lite"]
+      num_retries: 2
 
     general_settings:
       master_key: os.environ/LITELLM_MASTER_KEY
